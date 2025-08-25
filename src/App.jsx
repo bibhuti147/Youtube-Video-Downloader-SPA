@@ -10,7 +10,7 @@ const App = () => {
     try {
       const urlObj = new URL(url);
       setMessage('');
-      fetch(`http://127.0.0.1:8000/yurl/${urlObj.searchParams.get("v")}`)
+      fetch(`https://ytdownloader-script.onrender.com/yurl/${urlObj.searchParams.get("v")}`)
       setUrl(''); 
     } catch {
       setMessage('Please enter a valid URL.');
