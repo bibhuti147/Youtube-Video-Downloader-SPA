@@ -3,7 +3,8 @@ import { ToastContainer, toast } from 'react-toastify';
 
 const App = () => {
   const [url, setUrl] = useState('');
-  const [message, setMessage] = useState('');     
+  const [message, setMessage] = useState('');   
+  const [videoUrl, setVideoUrl] = useState('');  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -11,9 +12,11 @@ const App = () => {
       const urlObj = new URL(url).searchParams.get("v") || new URL(url).pathname.slice(1);
       alert(urlObj)
       setMessage('');
-      fetch(`https://ytdownloader-script.onrender.com/yurl/${urlObj}`)
+      const res = await fetch(`https://ytdownloader-script.onrender.com/yurl/${urlObj}`)
+      const data = await response.json();
+      setVideoUrl(data.video_url);  
       setUrl(''); 
-    } catch {
+    } catch { 
       setMessage('Please enter a valid URL.');
     }
   };
@@ -43,6 +46,24 @@ const App = () => {
         </form>
         {message && <p className="mt-4 text-center text-red-500 text-sm">{message}</p>}
       </div>
+      {videoUrl && (
+  <div className="mt-6 px-4 sm:px-0 max-w-full">
+    <h3 className="text-lg font-semibold mb-2 text-center text-gray-800 sm:text-left">
+      Downloaded Video:
+    </h3>
+    <video
+      className="mx-auto sm:mx-0 rounded-md shadow-md max-w-full h-auto"
+      controls
+      playsInline
+      preload="metadata"
+      // Use 100% width on small screens, limited max-width on larger screens
+      style={{ width: "100%", maxWidth: "400px" }}
+    >
+      <source src={videoUrl} type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+)}
     </div>
   );
 }
