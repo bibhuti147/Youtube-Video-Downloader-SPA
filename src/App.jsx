@@ -11,7 +11,7 @@ const App = () => {
       const urlObj = new URL(url).searchParams.get("v") || new URL(url).pathname.slice(1);
       alert(urlObj)
       setMessage('');
-      fetch(`https://ytdownloader-script.onrender.com/yurl/${urlObj.searchParams.get("v")}`)
+      fetch(`https://ytdownloader-script.onrender.com/yurl/${urlObj}`)
       setUrl(''); 
     } catch {
       setMessage('Please enter a valid URL.');
