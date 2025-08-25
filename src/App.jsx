@@ -9,6 +9,7 @@ const App = () => {
     e.preventDefault();
     try {
       const urlObj = new URL(url).searchParams.get("v") || new URL(url).pathname.slice(1);
+      alert(urlObj)
       setMessage('');
       fetch(`https://ytdownloader-script.onrender.com/yurl/${urlObj.searchParams.get("v")}`)
       setUrl(''); 
