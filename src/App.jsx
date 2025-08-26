@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const [url, setUrl] = useState("");
@@ -7,8 +8,9 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try { 
+    try {
       setMessage("");
+
       const response = await fetch(
         "https://ytdownloader-script.onrender.com/download-video",
         {
@@ -18,19 +20,34 @@ const App = () => {
         }
       );
 
-      if (!response.ok) throw new Error("Download failed");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Download failed");
+      }
+
+      // ✅ Extract filename from headers
+      const disposition = response.headers.get("Content-Disposition");
+      let fileName = "video.mp4";
+      if (disposition && disposition.includes("filename=")) {
+        fileName = disposition.split("filename=")[1].replace(/['"]/g, "");
+      }
+
       const blob = await response.blob();
       const urlBlob = window.URL.createObjectURL(blob);
+
       const a = document.createElement("a");
       a.href = urlBlob;
-      a.download = "video.mp4";
+      a.download = fileName;
       document.body.appendChild(a);
       a.click();
       a.remove();
+
       window.URL.revokeObjectURL(urlBlob);
       setUrl("");
-    } catch {
-      setMessage("Please enter a valid URL.");
+      toast.success("Download started!");
+    } catch (err) {
+      setMessage(err.message || "Something went wrong.");
+      toast.error(err.message || "Download failed");
     }
   };
 
