@@ -7,13 +7,18 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const urlObj =
-        new URL(url).searchParams.get("v") || new URL(url).pathname.slice(1); 
+    try { 
       setMessage("");
       const response = await fetch(
-        `https://ytdownloader-script.onrender.com/yurl/${urlObj}`
+        "https://ytdownloader-script.onrender.com/download-video",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url }),
+        }
       );
+
+      if (!response.ok) throw new Error("Download failed");
       const blob = await response.blob();
       const urlBlob = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
