@@ -1,23 +1,32 @@
-import { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 const App = () => {
-  const [url, setUrl] = useState('');
-  const [message, setMessage] = useState('');   
-  const [videoUrl, setVideoUrl] = useState('');  
+  const [url, setUrl] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const urlObj = new URL(url).searchParams.get("v") || new URL(url).pathname.slice(1);
-      alert(urlObj)
-      setMessage('');
-      const res = await fetch(`https://ytdownloader-script.onrender.com/yurl/${urlObj}`)
-      const data = await response.json();
-      setVideoUrl(data.video_url);  
-      setUrl(''); 
-    } catch { 
-      setMessage('Please enter a valid URL.');
+      const urlObj =
+        new URL(url).searchParams.get("v") || new URL(url).pathname.slice(1);
+      alert(urlObj);
+      setMessage("");
+      const response = await fetch(
+        `https://ytdownloader-script.onrender.com/yurl/${urlObj}`
+      );
+      const blob = await response.blob();
+      const urlBlob = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = urlBlob;
+      a.download = "video.mp4";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(urlBlob);
+      setUrl("");
+    } catch {
+      setMessage("Please enter a valid URL.");
     }
   };
 
@@ -42,30 +51,14 @@ const App = () => {
           >
             Submit
           </button>
-          <ToastContainer />  
+          <ToastContainer />
         </form>
-        {message && <p className="mt-4 text-center text-red-500 text-sm">{message}</p>}
+        {message && (
+          <p className="mt-4 text-center text-red-500 text-sm">{message}</p>
+        )}
       </div>
-      {videoUrl && (
-  <div className="mt-6 px-4 sm:px-0 max-w-full">
-    <h3 className="text-lg font-semibold mb-2 text-center text-gray-800 sm:text-left">
-      Downloaded Video:
-    </h3>
-    <video
-      className="mx-auto sm:mx-0 rounded-md shadow-md max-w-full h-auto"
-      controls
-      playsInline
-      preload="metadata"
-      // Use 100% width on small screens, limited max-width on larger screens
-      style={{ width: "100%", maxWidth: "400px" }}
-    >
-      <source src={videoUrl} type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
-)}
     </div>
   );
-}
+};
 
 export default App;
